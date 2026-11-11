@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Погода</title>
+    <style>
+        body { 
+            font-family: sans-serif; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            height: 100vh; 
+            background: #02cbf3; 
+        }
+        .card { 
+            background: #bbee02; 
+            padding: 20px; 
+            border-radius: 12px; 
+            text-align: center; 
+            box-shadow: 0 4px 10px rgba(239, 241, 239, 0.1); 
+            h1 { font-size: 20px; margin: 0 0 10px; }
+        }
+        button { 
+            background: #1e88e5; 
+            color: #fff; 
+            border: none; 
+            padding: 8px 16px; 
+            border-radius: 6px; 
+            cursor: pointer; 
+            margin-top: 10px; 
+        }
+        button:disabled { 
+            background: #ccc; 
+            cursor: not-allowed; 
+        }
+    </style>
+</head>
+<body>
+<div class="card">
+    <h1>Погода</h1>
+    <h2 id="temp">--°C</h2>
+    <button id="btn" onclick="getWeather()">Обновить</button>
+</div>
+<script>
+async function getWeather() {
+    const btn = document.getElementById('btn');
+    const temp = document.getElementById('temp');
+
+    btn.disabled = true;
+    btn.innerText = 'Загрузка...';
+
+    temp.innerText = '--°C';
+
+    try {
+        const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=52.94&longitude=70.20&current_weather=true');
+        const data = await res.json();
+        const w = data.current_weather;
+        if (w === undefined) throw new Error('Нет данных');
+
+        temp.innerText = w.temperature + '°C';
+    } catch (e) {
+        temp.innerText = 'Ошибка';
+    } finally {
+        btn.disabled = false;
+        btn.innerText = 'Обновить';
+    }
+}
+getWeather();
+</script>
+</body>
+</html>
